@@ -1,0 +1,72 @@
+from appium import webdriver
+from appium.webdriver.common.touch_action import TouchAction
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+class MobileAppTest:
+
+    def __init__(self):
+        # Define your desired capabilities for Appium
+        desired_caps = {
+            'platformName': 'Android',  # Change it to 'iOS' if needed
+            'platformVersion': 'your_platform_version',
+            'deviceName': 'your_device_name',
+            'appPackage': 'your_app_package',
+            'appActivity': 'your_app_activity',
+            'autoGrantPermissions': True,
+        }
+
+        # Initialize Appium driver
+        self.driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
+
+    def login_test(self, username, password):
+        # Locate the username and password fields, and the login button
+        username_field = self.driver.find_element(By.ID, 'your_username_element_id')
+        password_field = self.driver.find_element(By.ID, 'your_password_element_id')
+        login_button = self.driver.find_element(By.ID, 'your_login_button_element_id')
+
+        # Enter username and password
+        username_field.send_keys(username)
+        password_field.send_keys(password)
+
+        # Click the login button
+        login_button.click()
+
+        # Wait for the login to complete (you may need to adjust the timeout)
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'your_welcome_screen_element_id')))
+
+    def forgot_password_test(self, email):
+        # Locate the 'Forgot Password' link and click on it
+        forgot_password_link = self.driver.find_element(By.ID, 'your_forgot_password_link_element_id')
+        forgot_password_link.click()
+
+        # Locate the email field for password recovery
+        email_field = self.driver.find_element(By.ID, 'your_email_field_element_id')
+        email_field.send_keys(email)
+
+        # Submit the password recovery form
+        submit_button = self.driver.find_element(By.ID, 'your_submit_button_element_id')
+        submit_button.click()
+
+        # Wait for the password recovery confirmation message
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'your_confirmation_message_element_id')))
+
+    def run_tests(self):
+        try:
+            # Test the login functionality
+            self.login_test('your_valid_username', 'your_valid_password')
+
+            # Test the password recovery feature
+            self.forgot_password_test('your_valid_email')
+
+        except Exception as e:
+            print(f"Test failed: {e}")
+
+        finally:
+            # Close the application session
+            self.driver.quit()
+
+# Instantiate the MobileAppTest class and run the tests
+mobile_test = MobileAppTest()
+mobile_test.run_tests()
